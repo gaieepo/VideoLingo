@@ -5,7 +5,7 @@ import shutil
 from rich import print as rprint
 from rich.console import Console
 from rich.panel import Panel
-from videolingo.core.all_tts_functions.estimate_duration import estimate_duration, init_estimator
+from videolingo.core.estimate_duration import estimate_duration, init_estimator
 from videolingo.core.ask_gpt import ask_gpt
 from videolingo.core.config_utils import load_key
 from videolingo.core.prompts_storage import get_subtitle_trim_prompt

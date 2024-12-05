@@ -76,7 +76,7 @@ def split_by_comma_main(nlp):
             output_file.write(sentence + "\n")
 
     # delete the original file
-    os.remove("output/log/sentence_by_mark.txt")
+    # os.remove("output/log/sentence_by_mark.txt")
 
     print("[green]💾 Sentences split by commas saved to →  `sentences_by_comma.txt`[/green]")
 
