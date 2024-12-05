@@ -212,6 +212,7 @@ def process_text():
     print("Starting transcription with WhisperX...")
     step2_whisperX.transcribe()
     print("Transcription completed.")
+    import sys; sys.exit(1)
 
     print("Splitting long sentences using NLP...")
     step3_1_spacy_split.split_by_spacy()

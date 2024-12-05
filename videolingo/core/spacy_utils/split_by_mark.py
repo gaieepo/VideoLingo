@@ -32,7 +32,8 @@ def split_by_mark(nlp):
     with open("output/log/sentence_by_mark.txt", "w", encoding="utf-8") as output_file:
         for i, sentence in enumerate(sentences_by_mark):
             if i > 0 and sentence.strip() in [",", ".", "，", "。", "？", "！"]:
-                # ! If the current line contains only punctuation, merge it with the previous line, this happens in Chinese, Japanese, etc.
+                # ! If the current line contains only punctuation, merge it with the previous line,
+                # ! this happens in Chinese, Japanese, etc.
                 output_file.seek(output_file.tell() - 1, os.SEEK_SET)  # Move to the end of the previous line
                 output_file.write(sentence)  # Add the punctuation
             else:

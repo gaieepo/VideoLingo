@@ -1,10 +1,10 @@
 import concurrent.futures
 import math
+import os
 from difflib import SequenceMatcher
 
 from rich.console import Console
 from rich.table import Table
-
 from videolingo.core.ask_gpt import ask_gpt
 from videolingo.core.config_utils import get_joiner, load_key
 from videolingo.core.prompts_storage import get_split_prompt
@@ -126,6 +126,10 @@ def parallel_split_sentences(sentences, max_length, max_workers, nlp, retry_atte
 
 def split_sentences_by_meaning():
     """The main function to split sentences by meaning."""
+    if os.path.exists("output/log/sentence_splitbymeaning.txt"):
+        print("File 'sentence_splitbymeaning.txt' already exists. Skipping split_sentences_by_meaning.")
+        return
+
     # read input sentences
     with open("output/log/sentence_splitbynlp.txt", "r", encoding="utf-8") as f:
         sentences = [line.strip() for line in f.readlines()]

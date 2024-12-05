@@ -6,7 +6,8 @@ from threading import Lock
 import json_repair
 from openai import OpenAI
 from requests.exceptions import RequestException
-
+from videolingo.core.api_utils import count_api_calls
+from videolingo.core.ask_claude import ask_claude
 from videolingo.core.config_utils import load_key
 
 LOG_FOLDER = "output/gpt_log"
@@ -42,16 +43,34 @@ def check_ask_gpt_history(prompt, model, log_title):
     return False
 
 
+@count_api_calls
 def ask_gpt(prompt, response_json=True, valid_def=None, log_title="default"):
     api_set = load_key("api")
     llm_support_json = load_key("llm_support_json")
+
+    # Check if it's a Claude model and delegate if so
+    if "claude_key" in api_set and "claude_model" in api_set and api_set["claude_key"].strip():
+        system_prompt = None
+        if response_json:
+            system_prompt = "Please provide your response in valid JSON format."
+
+        return ask_claude(
+            prompt=prompt,
+            response_json=response_json,
+            valid_def=valid_def,
+            log_title=log_title,
+            system_prompt=system_prompt,
+            max_tokens=1000,
+            temperature=1.0,
+        )
+
     with LOCK:
         history_response = check_ask_gpt_history(prompt, api_set["model"], log_title)
         if history_response:
             return history_response
 
     if not api_set["key"]:
-        raise ValueError(f"⚠️API_KEY is missing")
+        raise ValueError("⚠️API_KEY is missing")
 
     messages = [{"role": "user", "content": prompt}]
 
@@ -66,7 +85,7 @@ def ask_gpt(prompt, response_json=True, valid_def=None, log_title="default"):
                 model=api_set["model"],
                 messages=messages,
                 response_format=response_format,
-                timeout=150,  #! set timeout
+                timeout=150,  # set timeout
             )
 
             if response_json:
@@ -95,7 +114,7 @@ def ask_gpt(prompt, response_json=True, valid_def=None, log_title="default"):
                         prompt,
                         response_data,
                         log_title="error",
-                        message=f"json_repair parsing failed.",
+                        message="json_repair parsing failed.",
                     )
                     if attempt == max_retries - 1:
                         raise Exception(
